@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AWS Notes App</title>
+</head>
+<body>
+    <h1>AWS Notes App</h1>
+
+    <input type="text" id="noteId" placeholder="Note ID">
+    <input type="text" id="content" placeholder="Note Content">
+    <button onclick="addNote()">Add Note</button>
+
+    <h2>Notes</h2>
+    <ul id="notesList"></ul>
+
+    <script>
+        const API_URL = "https://tigx4f8thg.execute-api.us-east-1.amazonaws.com/notes";
+
+        async function loadNotes() {
+            const response = await fetch(API_URL);
+            const notes = await response.json();
+
+            document.getElementById("notesList").innerHTML = "";
+
+            notes.forEach(note => {
+                const li = document.createElement("li");
+                li.textContent = `${note.noteId}: ${note.content}`;
+                document.getElementById("notesList").appendChild(li);
+            });
+        }
+
+        async function addNote() {
+            const noteId = document.getElementById("noteId").value;
+            const content = document.getElementById("content").value;
+
+            await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    noteId,
+                    content
+                })
+            });
+
+            loadNotes();
+        }
+
+        loadNotes();
+    </script>
+</body>
+</html>
